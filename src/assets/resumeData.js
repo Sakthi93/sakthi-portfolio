@@ -1,7 +1,7 @@
 export default {
 
   about:
-    "Sakkthinagaraj A P is a Full Stack Software Engineer and AWS Data Engineer with 5+ years of experience building scalable backend systems, cloud-native applications, and modern front-end interfaces. My expertise includes Python, Django, FastAPI, Vue.js, React.js, Next.js, AWS Glue, Lambda, Step Functions, ETL pipelines and Microservices.",
+    "Sakkthinagaraj A P is a Full Stack Software Engineer and AWS Data Engineer with 5+ years of experience building scalable backend systems, cloud-native applications, and modern front-end interfaces. His expertise includes Python, Django, FastAPI, Vue.js, React.js, Next.js, AWS Glue, Lambda, Step Functions, ETL pipelines and Microservices.",
 
   skills:
     "Python, Django, FastAPI, Flask, Vue 2, Vue 3, React, Next.js, AWS, Docker, PostgreSQL, MySQL, Redis, JWT, OAuth2, Terraform, GitHub Actions.",
