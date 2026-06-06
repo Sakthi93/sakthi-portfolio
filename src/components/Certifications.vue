@@ -7,7 +7,7 @@
 
 <br><br>
 
-<a href="YOUR_CREDLY_LINK" target="_blank">
+<a href="https://www.credly.com/badges/cdbee736-c753-4fc7-8e67-0732258a881e/public_url" target="_blank">
 <button>Verify on Credly</button>
 </a>
 

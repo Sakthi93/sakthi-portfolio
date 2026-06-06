@@ -17,12 +17,17 @@ AWS ETL pipelines and modern Vue.js systems.
 
 <div>
 
-<a href="/resume.pdf" target="_blank">
-<button>Download Resume</button>
+<a href="/resume.pdf"  download="Sakkthinagaraj_Resume.pdf">
+    
+<button><i class="fas fa-download"></i>      Download Resume</button>
 </a>
+<!-- <a href="/resume.pdf" target="_blank">
+    
+<button><i class="fas fa-download"></i>Download Resume</button>
+</a> -->
 
 <a href="https://github.com/Sakthi93" target="_blank">
-<button>GitHub</button>
+<button> <i class="fab fa-github"></i>     GitHub</button>
 </a>
 
 </div>
