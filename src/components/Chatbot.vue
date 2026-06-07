@@ -157,14 +157,19 @@ const askQuestion = async () => {
   // About
 
 if (
-  q.includes("sakkthi") ||
-  q.includes("sakthi") ||
-  q.includes("sakkthinagaraj") ||
   q.includes("about") ||
   q.includes("introduce") ||
   q.includes("experience")
 ) {
   answer = resume.about
+}
+// Overview
+  else if (
+    q.includes("overview") ||
+    q.includes("summary")
+) {
+  
+  answer = resume.overview
 }
 
   // Skills

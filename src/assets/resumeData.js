@@ -1,4 +1,16 @@
 export default {
+// This file contains the resume data for Sakkthinagaraj A P.It is the brain of the chatbot, providing all the information about his skills, experience, education, and projects. The chatbot will use this data to answer questions.//use backtick(`) for multiline string,  // use double quotes("") for single line string
+  overview: `
+Sakkthinagaraj A P is a Full Stack Developer and Cloud Data Engineer with experience in building scalable web applications and cloud-based data processing systems.
+
+On the full stack side, he has worked with Python (Django REST Framework) for backend development and modern frontend frameworks such as Vue.js, React.js, and Next.js. He has built REST APIs, developed modular frontend-backend architectures, and contributed to enterprise-grade application development.
+
+In addition, he has good experience in cloud data engineering on AWS, where he has worked with services such as AWS Glue, S3, Lambda, SQS, and Step Functions. He has designed and implemented cloud-based data workflows, including automated file processing pipelines, orchestration of distributed tasks, and event-driven architectures for scalable data movement and transformation.
+
+He has also contributed to enterprise systems where application development and cloud data pipelines were integrated, ensuring smooth data flow across services and environments.
+
+Overall, his expertise spans full stack development and AWS cloud data engineering, with a strong focus on building scalable, cloud-native applications and automated data workflows.
+`,
 
   about:
     "Sakkthinagaraj A P is a Full Stack Software Engineer and AWS Data Engineer with 5+ years of experience building scalable backend systems, cloud-native applications, and modern front-end interfaces. His expertise includes Python, Django, FastAPI, Vue.js, React.js, Next.js, AWS Glue, Lambda, Step Functions, ETL pipelines and Microservices.",
