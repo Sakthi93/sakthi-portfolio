@@ -1,7 +1,7 @@
 <template>
 <section id="certifications">
 
-<h2>AWS Certification</h2>
+<h2>Certification</h2>
 
 <img src="/aws-badge.png" width="150"/>
 

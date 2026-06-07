@@ -27,8 +27,8 @@ React.js
 </div>
 
 <div class="skill">
-<i class="fab fa-docker"></i>
-Docker
+<i class="fas fa-database"></i>
+PostgreSQL
 </div>
 
 <div class="skill">
@@ -47,9 +47,10 @@ Bitbucket
 </div>
 
 <div class="skill">
-<i class="fas fa-database"></i>
-PostgreSQL
+<i class="fab fa-docker"></i>
+Docker
 </div>
+
 
 </div>
 
