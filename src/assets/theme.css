@@ -1,0 +1,108 @@
+/* 🌞 LIGHT THEME */
+:root {
+  --bg: #ffffff;
+  --text: #111111;
+  --card: #f3f4f6;
+  --primary: #2563eb;
+}
+
+/* 🌙 DARK THEME */
+html.dark {
+  --bg: #0f172a;
+  --text: #f8fafc;
+  --card: #1e293b;
+  --primary: #3b82f6;
+}
+
+/* GLOBAL RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Inter, Arial, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  transition: all 0.3s ease;
+}
+
+/* reusable */
+section {
+  padding: 80px 10%;
+}
+
+h1 {
+  font-size: 3rem;
+}
+
+h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: var(--primary);
+  color: white;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+/* 🔥 GLOBAL TOOLTIP SYSTEM */
+/* [data-tooltip] {
+  position: relative;
+  cursor: pointer;
+}
+
+/* Tooltip box */
+/* [data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: -38px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.2s ease;
+  z-index: 999;
+}*/
+
+/* Tooltip arrow */
+/*[data-tooltip]::before {
+  content: "";
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.85);
+
+  opacity: 0;
+  transition: 0.2s ease;
+  z-index: 999;
+}*/
+
+/* Show on hover */
+/*[data-tooltip]:hover::after,
+[data-tooltip]:hover::before {
+  opacity: 1;
+}*/ 

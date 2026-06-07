@@ -17,9 +17,12 @@ AWS ETL pipelines and modern Vue.js systems.
 
 <div>
 
-<a href="/resume.pdf"  download="Sakkthinagaraj_Resume.pdf">
+<a href="/resume.pdf"  target="_blank">
     
-<button><i class="fas fa-download"></i>      Download Resume</button>
+<button class="btn" data-tooltip="View my resume">
+  <i class="fa-solid fa-eye"></i>
+  <span>View Resume</span>
+</button>
 </a>
 <!-- <a href="/resume.pdf" target="_blank">
     
@@ -73,6 +76,45 @@ margin-bottom:30px;
 div{
 display:flex;
 gap:20px;
+}
+
+/* Tooltip box */
+.btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.2s ease;
+}
+
+/* Tooltip arrow */
+.btn::before {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.8);
+
+  opacity: 0;
+  transition: 0.2s ease;
+}
+
+/* Show on hover */
+.btn:hover::after,
+.btn:hover::before {
+  opacity: 1;
 }
 
 </style>

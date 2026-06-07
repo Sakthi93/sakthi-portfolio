@@ -18,12 +18,12 @@ AWS
 
 <div class="skill">
 <i class="fab fa-vuejs"></i>
-Vue 3
+Vue.js
 </div>
 
 <div class="skill">
 <i class="fab fa-react"></i>
-React
+React.js
 </div>
 
 <div class="skill">
