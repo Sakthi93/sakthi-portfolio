@@ -135,6 +135,8 @@ def to_js(data):
 
 
 if __name__ == "__main__":
+    import os
+    os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
     text = extract_text(PDF_PATH)
     data = build_resumedata(text)
     js = to_js(data)

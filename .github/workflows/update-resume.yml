@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - public/resume.pdf
+      - src/assets/resumeData.js
 
 jobs:
   parse-resume:
@@ -23,7 +24,11 @@ jobs:
         run: pip install pdfplumber
 
       - name: Parse resume and generate resumeData.js
-        run: python scripts/parse_resume.py
+        run: |
+          if [ ! -f src/assets/resumeData.js ]; then
+            echo "resumeData.js missing — regenerating..."
+          fi
+          python scripts/parse_resume.py
 
       - name: Commit updated resumeData.js
         run: |
