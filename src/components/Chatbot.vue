@@ -163,6 +163,11 @@ if (
 ) {
   answer = resume.about
 }
+  else if (
+  q.includes("experience")
+) {
+  answer = resume.experience
+}
 // Overview
   else if (
     q.includes("overview") ||

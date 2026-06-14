@@ -27,11 +27,11 @@ const toggleTheme = () => {
 <style scoped>
 .theme-btn {
   position: fixed;
-  top: 80px; /* below navbar */
+  top: 100px;/* below navbar */
   right: 20px;
   z-index: 999;
   background: var(--card);
-  color: var(--text);
+  color: var(--card-text);
   padding: 10px 14px;
   border-radius: 999px;
   border: 1px solid rgba(255,255,255,0.1);

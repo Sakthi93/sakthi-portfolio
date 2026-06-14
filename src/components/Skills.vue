@@ -60,33 +60,33 @@ Docker
 </template>
 
 <style scoped>
-
-.skills{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-gap:20px;
-margin-top:20px;
+.skills {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
 }
 
-.skill{
-background:#1e293b;
-padding:20px;
-border-radius:12px;
-text-align:center;
-font-size:18px;
-transition:.3s;
+.skill {
+  background: var(--card);
+  color: var(--card-text);
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 18px;
+  transition: 0.3s;
+  border: 1px solid var(--border);
 }
 
-.skill:hover{
-transform:translateY(-5px);
-background:#334155;
+.skill:hover {
+  transform: translateY(-5px);
+  opacity: 0.95;
 }
 
-.skill i{
-font-size:35px;
-margin-bottom:10px;
-display:block;
-color:#60a5fa;
+.skill i {
+  font-size: 35px;
+  margin-bottom: 10px;
+  display: block;
+  color: var(--primary);
 }
-
 </style>
