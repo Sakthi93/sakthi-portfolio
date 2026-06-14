@@ -15,10 +15,7 @@ Overall, his expertise spans full stack development and AWS cloud data engineeri
     "Sakkthinagaraj has over 5 years of experience in software development and cloud data engineering. He has worked on multiple projects involving full stack development, cloud-native applications, and data processing pipelines. His experience includes working with various technologies and frameworks, as well as collaborating with cross-functional teams to deliver high-quality software solutions.",  
   about:
     "Sakkthinagaraj A P is a Full Stack Software Engineer and AWS Data Engineer with 5+ years of experience building scalable backend systems, cloud-native applications, and modern front-end interfaces. His expertise includes Python, Django, FastAPI, Vue.js, React.js, Next.js, AWS Glue, Lambda, Step Functions, ETL pipelines and Microservices.",
-
-  skills:
-    "Python, Django, FastAPI, Flask, Vue 2, Vue 3, React, Next.js, AWS, Docker, PostgreSQL, MySQL, Redis, JWT, OAuth2, Terraform, GitHub Actions.",
-
+    
   aws:
     "Sakkthinagaraj have worked with AWS S3, Lambda, Step Functions, SQS, SNS, SES, DynamoDB, DynamoDB Streams, AWS Glue, Athena, Redshift, CloudWatch, CloudFront and AppFlow.",
 
