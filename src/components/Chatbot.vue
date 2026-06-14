@@ -158,7 +158,6 @@ const streamMessage = async (text) => {
     type: "bot",
     text: ""
   }
-
   messages.value.push(botMessage)
 
   await scrollBottom()
@@ -290,8 +289,9 @@ if (
   else if (
     q.includes("skill")
   ) {
-
-    answer = resume.skillList
+    answer = Array.isArray(resume.skillList)
+      ? resume.skillList.join("\n")
+      : resume.skillList
 
   }
 
