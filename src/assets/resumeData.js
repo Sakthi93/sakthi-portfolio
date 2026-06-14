@@ -61,6 +61,25 @@ Overall, his expertise spans full stack development and AWS cloud data engineeri
 
     crm:
       "Welcome CRM involved configuring frontend requirements and integrating backend APIs."
-  }
+    
+    },
+    skillList: [
+      "Python",
+      "Django",
+      "Vue.js",
+      "React.js",
+      "Next.js",
+      "AWS",
+      "Lambda",
+      "S3",
+      "Step Functions",
+      "SQS",
+      "SNS",
+      "DynamoDB",
+      "PostgreSQL",
+      "GitLab",
+      "GitHub",
+      "Microservices"
+    ]
 
 }

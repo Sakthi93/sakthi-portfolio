@@ -76,6 +76,7 @@
 
 import { ref, nextTick } from "vue"
 import resume from "../assets/resumeData"
+import { matchJD } from "../utils/jdMatcher"
 
 const isOpen = ref(false)
 
@@ -85,9 +86,17 @@ const chatBody = ref(null)
 
 const messages = ref([
   {
-    type: "bot",
-    text: "Hi! I'm Sakkthi's AI assistant. Ask me about his experience, AWS projects, skills or education."
-  }
+  type: "bot",
+  text: `Hi! I'm Sakkthi's AI assistant.
+
+You can:
+• Ask about skills
+• Ask about projects
+• Ask about companies
+• Ask about AWS experience
+• Ask about education
+• Paste a Job Description for JD matching`
+}
 ])
 
 const toggleChat = () => {
@@ -103,6 +112,44 @@ const scrollBottom = async () => {
       chatBody.value.scrollHeight
   }
 
+}
+
+const JD_KEYWORDS = [
+  "requirements",
+  "responsibilities",
+  "must have",
+  "preferred",
+  "job description",
+  "looking for",
+  "experience with",
+  "skills required",
+  "qualifications"
+]
+
+const isJobDescription = (text) => {
+
+  const lower = text.toLowerCase()
+
+  const keywordMatches =
+    JD_KEYWORDS.filter(keyword =>
+      lower.includes(keyword)
+    ).length
+
+  const skillMatches = [
+    "python",
+    "django",
+    "react",
+    "vue",
+    "aws",
+    "docker",
+    "kubernetes",
+    "postgresql",
+    "microservices"
+  ].filter(skill =>
+    lower.includes(skill)
+  ).length
+
+  return keywordMatches >= 1 || skillMatches >= 4
 }
 
 const streamMessage = async (text) => {
@@ -141,14 +188,75 @@ const askQuestion = async () => {
   if (question.value.trim() === "")
     return
 
-  const q =
-    question.value.toLowerCase()
+  const originalQuestion = question.value
 
+  const q = originalQuestion.toLowerCase()
+
+  // Show user message in chat first
   messages.value.push({
     type: "user",
-    text: question.value
+    text:
+      originalQuestion.length > 200
+        ? originalQuestion.substring(0, 200) + "..."
+        : originalQuestion
   })
 
+  await scrollBottom()
+
+  // ==========================
+  // JD MATCHER
+  // ==========================
+
+  if (isJobDescription(originalQuestion)) {
+
+    const result = matchJD(originalQuestion)
+
+    let answer = `
+🎯 JD MATCH SCORE: ${result.score}%
+
+✅ Matched Skills:
+${result.matched.length
+  ? result.matched.join(", ")
+  : "None"}
+
+❌ Missing Skills:
+${result.missing.length
+  ? result.missing.join(", ")
+  : "None"}
+`
+
+    if (result.score >= 80) {
+
+      answer += `
+
+🚀 Strong match for this role.
+Likely to clear resume screening.
+`
+
+    } else if (result.score >= 60) {
+
+      answer += `
+
+⚡ Good match.
+Some upskilling may improve alignment.
+`
+
+    } else {
+
+      answer += `
+
+📚 Several skill gaps detected.
+Consider highlighting transferable experience.
+`
+
+    }
+
+    question.value = ""
+
+    await streamMessage(answer)
+
+    return
+  }
   await scrollBottom()
 
   let answer =
@@ -183,7 +291,7 @@ if (
     q.includes("skill")
   ) {
 
-    answer = resume.skills
+    answer = resume.skillList
 
   }
 
