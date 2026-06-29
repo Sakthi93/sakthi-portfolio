@@ -154,6 +154,9 @@ const isJobDescription = (text) => {
 
 const streamMessage = async (text) => {
 
+  if (!text) return
+
+
   const botMessage = {
     type: "bot",
     text: ""
@@ -265,15 +268,50 @@ Consider highlighting transferable experience.
 
 if (
   q.includes("about") ||
-  q.includes("introduce") ||
-  q.includes("experience")
-) {
+  q.includes("introduce") ) {
   answer = resume.about
 }
   else if (
   q.includes("experience")
 ) {
-  answer = resume.experience
+  answer = resume.overview
+}
+else if(
+  q.includes("aws")
+){
+  answer = Object.entries(resume.awsExperience).map(([key, val]) => `• ${key}:\n${val}`).join("\n\n")
+}
+else if(
+  q.includes("ai tool") ||
+  q.includes("aitools") ||
+  q.includes("ai tools")
+){
+  answer = Object.entries(resume.AIToolsExperience).map(([key, val]) => `• ${key}:\n${val}`).join("\n\n")
+}
+else if(
+  q.includes("django")
+){
+  answer = Object.entries(resume.djangoExperience).map(([key, val]) => `• ${key}:\n${val}`).join("\n\n")
+}
+else if(
+  q.includes("Frontend")
+){
+  answer = Object.entries(resume.FrontendExperience).map(([key, val]) => `• ${key}:\n${val}`).join("\n\n")
+}
+else if(
+  q.includes("fastapi")
+){
+  answer = Object.entries(resume.FastAPIExperience).map(([key, val]) => `• ${key}:\n${val}`).join("\n\n")
+}
+else if(
+  q.includes("iac")
+){
+  answer = Object.entries(resume.IACExperience).map(([key, val]) => `• ${key}:\n${val}`).join("\n\n")
+}
+else if(
+  q.includes("aitools")
+){
+  answer = Object.entries(resume.AIToolsExperience).map(([key, val]) => `• ${key}:\n${val}`).join("\n\n")
 }
 // Overview
   else if (
@@ -289,20 +327,7 @@ if (
   else if (
     q.includes("skill")
   ) {
-    answer = Array.isArray(resume.skillList)
-      ? resume.skillList.join("\n")
-      : resume.skillList
-
-  }
-
-  // AWS
-
-  else if (
-    q.includes("aws") ||
-    q.includes("cloud")
-  ) {
-
-    answer = resume.aws
+    answer = resume.skills
 
   }
 
