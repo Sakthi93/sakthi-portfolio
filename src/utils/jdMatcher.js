@@ -24,24 +24,29 @@ export function matchJD(jdText) {
   const matched = []
   const missing = []
 
-  const resumeSkills =
-    resume.skillList.map(
-      skill => skill.toLowerCase()
-    )
+const resumeSkills = Array.isArray(resume.skills)
+  ? resume.skills
+  : typeof resume.skills === "string"
+    ? resume.skills.split(",").map(s => s.trim())
+    : [];
 
-  KNOWN_SKILLS.forEach(skill => {
+const normalizedSkills = resumeSkills.map(skill => skill.toLowerCase());
+console.log("Resume Skills:", normalizedSkills);
 
-    if (!jd.includes(skill)) return
+KNOWN_SKILLS.forEach(skill => {
+  const skillLower = skill.toLowerCase();
 
-    if (resumeSkills.includes(skill)) {
-      if (!matched.includes(skill))
-        matched.push(skill)
-    } else {
-      if (!missing.includes(skill))
-        missing.push(skill)
-    }
+  if (!jd.toLowerCase().includes(skillLower)) return;
 
-  })
+  if (normalizedSkills.includes(skillLower)) {
+    if (!matched.includes(skill))
+      matched.push(skill);
+  } else {
+    if (!missing.includes(skill))
+      missing.push(skill);
+  }
+});
+
 
   const total =
     matched.length + missing.length

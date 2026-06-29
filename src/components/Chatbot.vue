@@ -401,7 +401,7 @@ if (
   answer = resume.about
 }
 else if (
-  q.includes("experience")
+  q.includes("years")
 ) {
   question.value = ""
   await streamMessage(resume.totalYearsOfExperience)
@@ -424,6 +424,7 @@ else if(
   q.includes("aws")
 ){
   question.value = ""
+   await streamMessage(resume.awsExperienceSummary)
   showChips("Select an AWS service:", resume.awsExperience || {})
   return
 }
@@ -434,11 +435,10 @@ else if(
   answer = resume.awsExperience[matchedKey]
 }
 else if(
-  q.includes("ai tool") ||
-  q.includes("aitools") ||
-  q.includes("ai tools")
+  q.includes("ai")
 ){
   question.value = ""
+  await streamMessage(resume.AIToolsExperienceSummary)
   showChips("Select an AI tool:", resume.AIToolsExperience || {})
   return
 }
@@ -446,6 +446,7 @@ else if(
   q.includes("django")
 ){
   question.value = ""
+  await streamMessage(resume.djangoExperienceSummary)
   showChips("Select a Django topic:", resume.djangoExperience || {})
   return
 }
@@ -453,6 +454,7 @@ else if(
   q.includes("frontend")
 ){
   question.value = ""
+  await streamMessage(resume.FrontendExperienceSummary)
   showChips("Select a Frontend topic:", resume.FrontendExperience || {})
   return
 }
@@ -460,14 +462,14 @@ else if(
   q.includes("fastapi")
 ){
   question.value = ""
-  showChips("Select a FastAPI topic:", resume.FastAPIExperience || {})
+  await streamMessage(resume.FastAPIExperience.fastapi) 
   return
 }
 else if(
   q.includes("iac")
 ){
   question.value = ""
-  showChips("Select an IaC topic:", resume.IACExperience || {})
+  await streamMessage(resume.IACExperience.terraform)
   return
 }
 else if(

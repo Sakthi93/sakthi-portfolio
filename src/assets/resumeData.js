@@ -91,6 +91,8 @@ Overall, his expertise spans full stack development and AWS cloud data engineeri
     crm:
       "Welcome CRM involved configuring frontend requirements and integrating backend APIs."
   },
+  awsExperienceSummary:
+    "Sakkthinagaraj has extensive experience with AWS services, including building ETL pipelines with AWS Glue, implementing serverless functions using AWS Lambda, orchestrating workflows with AWS Step Functions, and managing data storage with Amazon S3. He has also utilized AWS SQS for message queuing, AWS SNS for pub/sub messaging, and AWS DMS for database migration and replication. Additionally, he has experience with AWS DataSync for efficient data transfer, AWS AppFlow for automating data flows between SaaS applications, and AWS SES for email sending. He has designed and deployed RESTful APIs using AWS API Gateway and worked with Amazon DynamoDB for NoSQL data storage.",
   awsExperience: {
     glue:
       "Sakkthinagaraj has extensive experience with AWS Glue, including building ETL pipelines, data cataloging, and automating data workflows.",
@@ -117,12 +119,16 @@ Overall, his expertise spans full stack development and AWS cloud data engineeri
       DynamoDB:
       "Sakkthinagaraj has worked with Amazon DynamoDB for NoSQL data storage, implementing efficient data models, indexing strategies, and DynamoDB Streams for real-time data processing.",
   },
+  djangoExperienceSummary:
+    "Sakkthinagaraj has extensive experience with DjangoRestFramework, including developing RESTful APIs using Django REST Framework, implementing authentication, serialization, and viewsets for efficient backend services. He has also designed modular backend-frontend architectures using Django, ensuring clean separation of concerns and maintainable codebase.",
   djangoExperience: {
     restFramework:
       "Sakkthinagaraj has developed RESTful APIs using Django REST Framework, implementing authentication, serialization, and viewsets for efficient backend services.",  
       modularArchitecture:
       "Sakkthinagaraj has designed modular backend-frontend architectures using Django, ensuring clean separation of concerns and maintainable codebase."
   },
+  FrontendExperienceSummary:
+    "Sakkthinagaraj has extensive experience with modern frontend frameworks, including Vue.js, React.js, and Next.js. He has developed dynamic user interfaces, implemented state management, and optimized performance for responsive web applications. He has also leveraged server-side rendering and static site generation techniques to enhance SEO and improve user experience.",
   FrontendExperience: {
     vuejs:
       "Sakkthinagaraj has developed dynamic frontend interfaces using Vue.js, implementing components, state management, and routing for responsive web applications.",
@@ -139,6 +145,8 @@ Overall, his expertise spans full stack development and AWS cloud data engineeri
     terraform:
       "Sakkthinagaraj has implemented infrastructure as code using Terraform, enabling automated provisioning and management of cloud resources for scalable and reproducible deployments.",
   },
+  AIToolsExperienceSummary:
+    "Sakkthinagaraj has leveraged AI tools like Amazon Q and GitHub Copilot to enhance development productivity, generate code snippets, and assist in problem-solving during software development tasks.",
   AIToolsExperience: {
     AmazonQ:
       "Sakkthinagaraj has utilized AmazonQ for generating code snippets, documentation, and assisting in problem-solving during development tasks.",
