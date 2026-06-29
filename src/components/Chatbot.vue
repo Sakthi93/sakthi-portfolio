@@ -309,7 +309,7 @@ else if(
   answer = Object.entries(resume.IACExperience).map(([key, val]) => `• ${key}:\n${val}`).join("\n\n")
 }
 else if(
-  q.includes("aitools")
+  q.includes("ai")
 ){
   answer = Object.entries(resume.AIToolsExperience).map(([key, val]) => `• ${key}:\n${val}`).join("\n\n")
 }

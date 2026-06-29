@@ -43,12 +43,12 @@
         </a>
       </li>
 
-      <!-- <li>
-        <a href="#chatbot">
-          <i class="fas fa-robot"></i>
-          AI Assistant
+      <li>
+        <a href="#resume-deck">
+          <i class="fas fa-layer-group"></i>
+          Resume Deck
         </a>
-      </li> -->
+      </li>
 
       <li>
         <a href="#contact">
