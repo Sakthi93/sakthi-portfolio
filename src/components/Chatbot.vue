@@ -26,10 +26,18 @@
         Sakkthi AI
       </div>
 
-      <i
-        class="fas fa-times close"
-        @click="toggleChat"
-      ></i>
+      <div class="header-actions">
+        <i
+          :class="speakEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute'"
+          :title="speakEnabled ? 'Voice ON' : 'Voice OFF'"
+          class="voice-toggle"
+          @click="speakEnabled = !speakEnabled"
+        ></i>
+        <i
+          class="fas fa-times close"
+          @click="toggleChat"
+        ></i>
+      </div>
 
     </div>
 
@@ -43,11 +51,26 @@
       <div
         v-for="(message,index) in messages"
         :key="index"
-        :class="message.type"
+        :class="['chips', 'cert'].includes(message.type) ? 'bot' : message.type"
       >
-
-        {{ message.text }}
-
+        <template v-if="message.type === 'chips'">
+          <div>{{ message.label }}</div>
+          <div class="chips">
+            <span
+              v-for="chip in message.chips"
+              :key="chip.key"
+              class="chip"
+              @click="selectChip(chip)"
+            >{{ chip.key }}</span>
+          </div>
+        </template>
+        <template v-else-if="message.type === 'cert'">
+          <div style="margin-bottom:6px;font-weight:600;">{{ message.name }}</div>
+          <div>To verify, <a :href="message.credlyUrl" target="_blank" class="cert-link">click here</a></div>
+        </template>
+        <template v-else>
+          {{ message.text }}
+        </template>
       </div>
 
     </div>
@@ -66,6 +89,15 @@
         <i class="fas fa-paper-plane"></i>
       </button>
 
+      <button
+        class="stop-btn"
+        :disabled="!isStreaming"
+        :title="isStreaming ? 'Stop' : 'Not streaming'"
+        @click="stopStreaming"
+      >
+        <i class="fas fa-stop-circle"></i>
+      </button>
+
     </div>
 
   </div>
@@ -79,6 +111,27 @@ import resume from "../assets/resumeData"
 import { matchJD } from "../utils/jdMatcher"
 
 const isOpen = ref(false)
+const speakEnabled = ref(false)
+const isStreaming = ref(false)
+let stopFlag = false
+
+const stopStreaming = () => {
+  stopFlag = true
+  window.speechSynthesis.cancel()
+}
+
+const speak = (text) => {
+  if (!speakEnabled.value) return
+  window.speechSynthesis.cancel()
+  const clean = text.replace(/[^\x00-\x7F•]/g, "").trim()
+  if (!clean) return
+  const utter = new SpeechSynthesisUtterance(clean)
+  utter.rate = 1
+  utter.pitch = 1
+  utter.lang = "en-US"
+  window.speechSynthesis.resume()
+  window.speechSynthesis.speak(utter)
+}
 
 const question = ref("")
 
@@ -152,10 +205,79 @@ const isJobDescription = (text) => {
   return keywordMatches >= 1 || skillMatches >= 4
 }
 
+const flattenResume = () => {
+  const results = []
+  const walk = (obj) => {
+    if (typeof obj === "string") {
+      results.push(obj)
+    } else if (Array.isArray(obj)) {
+      obj.forEach(walk)
+    } else if (obj && typeof obj === "object") {
+      Object.values(obj).forEach(walk)
+    }
+  }
+  walk(resume)
+  return results
+}
+
+const fuzzySearch = (q) => {
+  const keywords = q.split(" ").filter(w => w.length > 2)
+  const allTexts = flattenResume()
+  const scored = allTexts.map(text => {
+    const lower = text.toLowerCase()
+    const score = keywords.filter(k => lower.includes(k)).length
+    return { text, score }
+  }).filter(r => r.score > 0)
+  scored.sort((a, b) => b.score - a.score)
+  return scored.length ? scored[0].text : null
+}
+const replaceName = (text) => {
+  if (typeof text !== "string") return String(text)
+  let firstFound = false
+  return text.replace(/Sakkthinagaraj/gi, () => {
+    if (!firstFound) { firstFound = true; return "Sakkthinagaraj" }
+    return "He"
+  })
+}
+
+const showChips = (label, obj, type = "default") => {
+  messages.value.push({
+    type: "chips",
+    label,
+    chips: Object.entries(obj).map(([key, value]) => ({ key, value, type }))
+  })
+  scrollBottom()
+}
+
+const selectChip = async (chip) => {
+  messages.value.push({ type: "user", text: chip.key })
+  await scrollBottom()
+  if (chip.type === "company") {
+    const companyMap = {
+      "Accenture": resume.companies.accenture,
+      "EC Group Datasoft": resume.companies.ecgroup,
+      "Talentztech Solution": resume.companies.talentztech
+    }
+    const company = companyMap[chip.key]
+    if (company) {
+      await streamMessage(company.summary)
+      showChips("Select a project:", company.projects, "project")
+      return
+    }
+  }
+  await streamMessage(chip.value)
+}
+
 const streamMessage = async (text) => {
 
   if (!text) return
 
+  stopFlag = false
+  isStreaming.value = true
+
+  text = replaceName(text)
+
+  speak(text)
 
   const botMessage = {
     type: "bot",
@@ -171,6 +293,11 @@ const streamMessage = async (text) => {
 
   for (let i = 0; i < text.length; i++) {
 
+    if (stopFlag) {
+      isStreaming.value = false
+      return
+    }
+
     botMessage.text += text[i]
 
     messages.value = [...messages.value]
@@ -182,6 +309,8 @@ const streamMessage = async (text) => {
     )
 
   }
+
+  isStreaming.value = false
 
 }
 
@@ -271,47 +400,82 @@ if (
   q.includes("introduce") ) {
   answer = resume.about
 }
-  else if (
+else if (
   q.includes("experience")
 ) {
-  answer = resume.overview
+  question.value = ""
+  await streamMessage(resume.totalYearsOfExperience)
+  showChips("Explore experience by domain:", resume.domainExperience)
+  return
+}
+else if (
+  q.includes("certification") ||
+  q.includes("certified") ||
+  q.includes("credly")
+) {
+  question.value = ""
+  resume.certifications.forEach(cert => {
+    messages.value.push({ type: "cert", name: cert.name, credlyUrl: cert.credlyUrl })
+  })
+  await scrollBottom()
+  return
 }
 else if(
   q.includes("aws")
 ){
-  answer = Object.entries(resume.awsExperience).map(([key, val]) => `• ${key}:\n${val}`).join("\n\n")
+  question.value = ""
+  showChips("Select an AWS service:", resume.awsExperience || {})
+  return
+}
+else if(
+  Object.keys(resume.awsExperience).some(k => q.includes(k.toLowerCase()))
+){
+  const matchedKey = Object.keys(resume.awsExperience).find(k => q.includes(k.toLowerCase()))
+  answer = resume.awsExperience[matchedKey]
 }
 else if(
   q.includes("ai tool") ||
   q.includes("aitools") ||
   q.includes("ai tools")
 ){
-  answer = Object.entries(resume.AIToolsExperience).map(([key, val]) => `• ${key}:\n${val}`).join("\n\n")
+  question.value = ""
+  showChips("Select an AI tool:", resume.AIToolsExperience || {})
+  return
 }
 else if(
   q.includes("django")
 ){
-  answer = Object.entries(resume.djangoExperience).map(([key, val]) => `• ${key}:\n${val}`).join("\n\n")
+  question.value = ""
+  showChips("Select a Django topic:", resume.djangoExperience || {})
+  return
 }
 else if(
-  q.includes("Frontend")
+  q.includes("frontend")
 ){
-  answer = Object.entries(resume.FrontendExperience).map(([key, val]) => `• ${key}:\n${val}`).join("\n\n")
+  question.value = ""
+  showChips("Select a Frontend topic:", resume.FrontendExperience || {})
+  return
 }
 else if(
   q.includes("fastapi")
 ){
-  answer = Object.entries(resume.FastAPIExperience).map(([key, val]) => `• ${key}:\n${val}`).join("\n\n")
+  question.value = ""
+  showChips("Select a FastAPI topic:", resume.FastAPIExperience || {})
+  return
 }
 else if(
   q.includes("iac")
 ){
-  answer = Object.entries(resume.IACExperience).map(([key, val]) => `• ${key}:\n${val}`).join("\n\n")
+  question.value = ""
+  showChips("Select an IaC topic:", resume.IACExperience || {})
+  return
 }
 else if(
   q.includes("ai")
 ){
-  answer = Object.entries(resume.AIToolsExperience).map(([key, val]) => `• ${key}:\n${val}`).join("\n\n")
+  question.value = ""
+  showChips("Select an AI tool:", resume.AIToolsExperience || {})
+  return
 }
 // Overview
   else if (
@@ -347,94 +511,89 @@ else if(
     q.includes("companies") ||
     q.includes("he worked for")
   ) {
-
-    answer = resume.companyList
-
+    question.value = ""
+    await streamMessage(resume.companyList)
+    showChips("Select a company:", {
+      "Accenture": resume.companies.accenture.summary,
+      "EC Group Datasoft": resume.companies.ecgroup.summary,
+      "Talentztech Solution": resume.companies.talentztech.summary
+    }, "company")
+    return
   }
-  // Companies
-
   else if (
     q.includes("accenture")
   ) {
-
-    answer = resume.companies.accenture
-
+    question.value = ""
+    await streamMessage(resume.companies.accenture.summary)
+    showChips("Select a project:", resume.companies.accenture.projects, "project")
+    return
   }
 
   else if (
     q.includes("ec group")
   ) {
-
-    answer = resume.companies.ecgroup
-
+    question.value = ""
+    await streamMessage(resume.companies.ecgroup.summary)
+    showChips("Select a project:", resume.companies.ecgroup.projects, "project")
+    return
   }
 
   else if (
     q.includes("talentztech")
   ) {
-
-    answer = resume.companies.talentztech
-
+    question.value = ""
+    await streamMessage(resume.companies.talentztech.summary)
+    showChips("Select a project:", resume.companies.talentztech.projects, "project")
+    return
   }
 
   // Projects
 
-  else if (
-    q.includes("ipu")
-  ) {
-
-    answer = resume.projects.ipu
-
+  else if (q.includes("ipu")) {
+    answer = resume.companies.accenture.projects["IPU Optimization"]
   }
 
-  else if (
-    q.includes("alexandria")
-  ) {
-
-    answer = resume.projects.alexandria
-
+  else if (q.includes("alexandria")) {
+    answer = resume.companies.accenture.projects["Project Alexandria"]
   }
 
-  else if (
-    q.includes("cda")
-  ) {
-
-    answer = resume.projects.cda
-
+  else if (q.includes("cda")) {
+    answer = resume.companies.accenture.projects["CDA DAP Migration"]
   }
 
-  else if (
-    q.includes("strategy ai")
-  ) {
-
-    answer = resume.projects.strategyai
-
+  else if (q.includes("strategy ai")) {
+    answer = resume.companies.ecgroup.projects["Strategy AI"]
   }
 
-  else if (
-    q.includes("pinnit")
-  ) {
-
-    answer = resume.projects.pinnit
-
+  else if (q.includes("pinnit")) {
+    answer = resume.companies.ecgroup.projects["Pinnit"]
   }
 
-  else if (
-    q.includes("strategy cascader") ||
-    q.includes("cascader")
-  ) {
-
-    answer = resume.projects.cascader
-
+  else if (q.includes("strategy cascader") || q.includes("cascader")) {
+    answer = resume.companies.ecgroup.projects["Strategy Cascader"]
   }
 
+  else if (q.includes("welcome crm") || q.includes("crm")) {
+    answer = resume.companies.talentztech.projects["Welcome CRM"]
+  }
   else if (
-    q.includes("welcome crm") ||
-    q.includes("crm")
+    q.includes("contact") ||
+    q.includes("email") ||
+    q.includes("phone") ||
+    q.includes("reach")
   ) {
+    const c = resume.contact
+    answer = `📧 Email: ${c.email}\n📞 Phone: ${c.phone}\n🔗 GitHub: ${c.github}`
+  }
+  else if(
+    q.includes("years")
+  ){
+    answer = resume.totalYearOfExperience
+  }
 
-    answer = resume.projects.crm
-
+  if (answer === "Sorry, I can answer only questions related to Sakkthi's resume.") {
+    const fuzzy = fuzzySearch(q)
+    if (fuzzy) answer = fuzzy
   }
 
   question.value = ""
@@ -446,6 +605,32 @@ else if(
 </script>
 
 <style scoped>
+
+.cert-link{
+  color:#60a5fa;
+  text-decoration:underline;
+}
+
+.chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:10px;
+}
+
+.chip{
+  background:#2563eb;
+  color:white;
+  padding:6px 14px;
+  border-radius:20px;
+  font-size:0.82rem;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.chip:hover{
+  background:#1d4ed8;
+}
 
 .chat-bubble{
   position:fixed;
@@ -498,6 +683,40 @@ else if(
 .chat-header i{
   margin-right:8px;
 }
+
+.header-actions{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.voice-toggle{
+  cursor:pointer;
+  font-size:18px;
+  transition:.2s;
+  opacity:0.7;
+}
+
+.stop-btn{
+  width:50px;
+  border:none;
+  border-radius:10px;
+  background:transparent;
+  color:#ef4444;
+  cursor:pointer;
+  transition:.3s;
+  font-size:20px;
+}
+
+.stop-btn:hover:not(:disabled){
+  color:#dc2626;
+}
+
+.stop-btn:disabled{
+  opacity:0.3;
+  cursor:not-allowed;
+}
+
 
 .close{
   cursor:pointer;
@@ -558,15 +777,15 @@ else if(
 .chat-footer button{
   width:50px;
   border:none;
-  border-radius:10px;
-  background:#2563eb;
+  background:transparent;
   color:white;
   cursor:pointer;
   transition:.3s;
+  font-size:20px;
 }
 
 .chat-footer button:hover{
-  background:#1d4ed8;
+  color:#93c5fd;
 }
 
 .chat-body::-webkit-scrollbar{

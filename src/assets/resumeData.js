@@ -26,18 +26,46 @@ Overall, his expertise spans full stack development and AWS cloud data engineeri
   education:
     "Sakkthinagaraj completed MCA from SASTRA University and BCA from Government Arts College.",
 
-    companyList: 
-    "Over 5 years of experience by working in  Accenture, EC Group Datasoft and Talentztech Solution." ,
+    totalYearsOfExperience: "Around 6 years of experience in Full Stack Development and AWS Cloud Data Engineering.",
+
+  domainExperience: {
+    "AWS": "5.5 years of AWS Cloud Data Engineering experience working with S3, Lambda, Step Functions, SQS, SNS, SES, DynamoDB, Glue, Athena, Redshift, CloudWatch and AppFlow.",
+    "Django rest framework": "3.5 years of backend development experience using Django REST Framework, building RESTful APIs, authentication systems and modular architectures.",
+    "Vue js": " 3.7 years of frontend development experience using Vue.js, implementing dynamic interfaces, state management and routing for responsive web applications.",
+    "Next js": "Next js which is builton top of React, with 1 year of experience building server-side rendered web applications using Next.js, optimizing performance and SEO.",
+    "FastAPI": "2 years of experience building high-performance APIs using FastAPI with asynchronous endpoints and AWS service integration.",
+    "IaC": "1 year of Infrastructure as Code experience using Terraform for automated cloud resource provisioning on AWS.",
+    "AI Tools": "4+ year of experience leveraging AI tools like Amazon Q and GitHub Copilot to improve development productivity."
+  },
+
+  companyList: 
+    "Around 6years of experience by working in  Accenture, EC Group Datasoft and Talentztech Solution." ,
   companies: {
 
-    accenture:
-      "Currently working at Accenture as Fullstack LLM  Development Analyst.Worked on IPU Optimization, Project Alexandria and CDA DAP Migration projects.",
+    accenture: {
+      summary: "Currently working at Accenture as Fullstack LLM Development Analyst.",
+      projects: {
+        "IPU Optimization": "IPU Optimization involved migrating Informatica workflows to AWS. Sakkthinagaraj built cloud architecture using S3, Lambda, Step Functions, SQS, SNS and DynamoDB, reducing infrastructure cost by 50%.",
+        "Project Alexandria": "Project Alexandria is an application of archiving retired applications using AWS services like S3,SNS ,Step functions,lambda. The project involved building reusable AWS components and a Next.js self-service portal, improving reliability by 40% and reducing development time by 35%.",
+        "CDA DAP Migration": "CDA DAP Migration involved migrating 5+ legacy environments to AWS, building AWS Glue ETL pipelines and converting 20+ Fivetran transformation models into SQL implementations."
+      }
+    },
 
-    ecgroup:
-      "Worked at EC Group Datasoft as Software Engineer from Sept 2020 to Mar 2024.Worked on multiple projects including Strategy AI, Pinnit, Strategy Cascader and StrategyAI.",
+    ecgroup: {
+      summary: "Worked at EC Group Datasoft as Software Engineer from Sept 2020 to Mar 2024.",
+      projects: {
+        "Strategy AI": "Strategy AI was an enterprise application where Sakkthinagaraj developed backend APIs using Django REST Framework and frontend components using Vue.js.",
+        "Pinnit": "Pinnit involved backend services development and Vue.js frontend implementation.",
+        "Strategy Cascader": "Strategy Cascader involved scalable backend APIs and business workflow implementation."
+      }
+    },
 
-    talentztech:
-      "Worked as Senior Software Engineer at Talentztech Solution.Worked on Welcome CRM project."
+    talentztech: {
+      summary: "Worked as Senior Software Engineer at Talentztech Solution.",
+      projects: {
+        "Welcome CRM": "Welcome CRM involved configuring frontend requirements and integrating backend APIs."
+      }
+    }
   },
 
   projects: {
@@ -76,6 +104,12 @@ Overall, his expertise spans full stack development and AWS cloud data engineeri
       "Sakkthinagaraj has utilized AWS SQS for message queuing, enabling decoupled and scalable communication between distributed services.",
       SNS:
       "Sakkthinagaraj has implemented AWS SNS for pub/sub messaging, enabling real-time notifications and event-driven architectures.",  
+      DMS:
+      "Sakkthinagaraj has experience with AWS DMS for database migration and replication, facilitating seamless data movement between heterogeneous data sources.",
+      Datasync:
+      "Sakkthinagaraj has utilized AWS DataSync for efficient data transfer between on-premises storage and AWS, optimizing data migration and synchronization processes.",
+      AppFlow:
+      "Sakkthinagaraj has used AWS AppFlow for automating data flows between SaaS applications, enabling seamless integration and data synchronization.",
       SES:
       "Sakkthinagaraj has configured and managed email sending through AWS SES, implementing email templates and handling deliverability best practices.",
       APIGateway:
@@ -110,5 +144,17 @@ Overall, his expertise spans full stack development and AWS cloud data engineeri
       "Sakkthinagaraj has utilized AmazonQ for generating code snippets, documentation, and assisting in problem-solving during development tasks.",
     Copilot:
       "Sakkthinagaraj has leveraged GitHub Copilot for code suggestions, autocompletion, and enhancing productivity during software development.",
-  }
+  },
+  certifications: [
+    {
+      name: "AWS Certified Cloud Practitioner",
+      credlyUrl: "https://www.credly.com/badges/cdbee736-c753-4fc7-8e67-0732258a881e/public_url"
+    }
+  ],
+  contact: {
+    email: "asakthinagaraj93@gmail.com",
+    phone: "+91 9677460703",
+    github: "https://github.com/Sakkthinagaraj",
+  },
+  
 }
