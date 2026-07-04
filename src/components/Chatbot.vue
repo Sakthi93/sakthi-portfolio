@@ -7,7 +7,7 @@
     class="chat-bubble"
     @click="toggleChat"
   >
-    <i class="fas fa-robot"></i>
+   <img src="/profile.jpg" alt="Profile" class="header-avatar-logo" />
   </div>
 
   <!-- Chat Window -->
@@ -22,8 +22,8 @@
     <div class="chat-header">
 
       <div>
-        <i class="fas fa-robot"></i>
-        Sakkthi AI
+        <img src="/profile.jpg" alt="Profile" class="header-avatar-img" />
+        <span>Sakkthi Portfolio Assitant</span>
       </div>
 
       <div class="header-actions">
@@ -113,6 +113,7 @@ import { matchJD } from "../utils/jdMatcher"
 const isOpen = ref(false)
 const speakEnabled = ref(false)
 const isStreaming = ref(false)
+const hasWelcomed = ref(false)
 let stopFlag = false
 
 const stopStreaming = () => {
@@ -140,20 +141,28 @@ const chatBody = ref(null)
 const messages = ref([
   {
   type: "bot",
-  text: `Hi! I'm Sakkthi's AI assistant.
+  text: `Hello, and welcome to my portfolio.
 
-You can:
-• Ask about skills
-• Ask about projects
-• Ask about companies
-• Ask about AWS experience
-• Ask about education
-• Paste a Job Description for JD matching`
+I'm Sakkthinagaraj's AI assistant. I'm here to help you learn about his professional experience, technical skills, projects, AWS expertise, certifications, and education.
+
+You can also paste a job description, and I'll evaluate how well his profile matches the role.
+
+Feel free to ask me anything from Sakkthi's resume. I hope you enjoy exploring the portfolio.`
 }
 ])
 
 const toggleChat = () => {
   isOpen.value = !isOpen.value
+  
+  if (
+    isOpen.value &&
+    !hasWelcomed.value &&
+    messages.value.length > 0
+  ) {
+    speakEnabled.value = true
+    speak(messages.value[0].text)
+    hasWelcomed.value = true
+  }
 }
 
 const scrollBottom = async () => {
@@ -608,8 +617,24 @@ else if(
 
 <style scoped>
 
+.header-avatar-logo {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  object-fit: cover;
+  vertical-align: middle;
+}
+.header-avatar-img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
 .cert-link{
-  color:#60a5fa;
+  color:#8594a6;
   text-decoration:underline;
 }
 
@@ -651,10 +676,28 @@ else if(
   box-shadow:0 8px 25px rgba(0,0,0,.35);
   transition:.3s;
   z-index:9999;
+  animation: pulse 2s infinite;
 }
 
 .chat-bubble:hover{
   transform:scale(1.08);
+  animation-play-state: paused;
+}
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 8px 25px rgba(0,0,0,.35);
+  }
+
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 8px 35px rgba(37,99,235,.7);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 8px 25px rgba(0,0,0,.35);
+  }
 }
 
 .chat-window{
