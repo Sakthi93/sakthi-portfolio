@@ -2,20 +2,13 @@
 
   <!-- Floating Chat Bubble -->
 
-  <div
-    v-if="!isOpen"
-    class="chat-bubble"
-    @click="toggleChat"
-  >
-   <img src="/profile.jpg" alt="Profile" class="header-avatar-logo" />
+  <div v-if="!isOpen" class="chat-bubble" @click="toggleChat">
+    <img src="/profile.jpg" alt="Profile" class="header-avatar-logo" />
   </div>
 
   <!-- Chat Window -->
 
-  <div
-    v-if="isOpen"
-    class="chat-window"
-  >
+  <div v-if="isOpen" class="chat-window">
 
     <!-- Header -->
 
@@ -26,48 +19,85 @@
         <span>Sakkthi Portfolio Assitant</span>
       </div>
 
-      <div class="header-actions">
-        <i
-          :class="speakEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute'"
-          :title="speakEnabled ? 'Voice ON' : 'Voice OFF'"
-          class="voice-toggle"
-          @click="speakEnabled = !speakEnabled"
-        ></i>
-        <i
-          class="fas fa-times close"
-          @click="toggleChat"
-        ></i>
-      </div>
+      
+     <div class="header-actions">
+
+  <!-- Voice ON/OFF -->
+ <i
+  :class="speakEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute'"
+  :title="speakEnabled ? 'Voice ON' : 'Voice OFF'"
+  class="voice-toggle"
+  @click="toggleVoice"
+></i>
+
+  <!-- Stop current speech -->
+  <i
+    v-if="isSpeaking"
+    class="fas fa-stop-circle stop-voice"
+    title="Stop speaking"
+    @click="stopVoice"
+  ></i>
+
+  <!-- Replay last speech -->
+  <i
+  v-if="!isSpeaking && lastSpokenText"
+  class="fas fa-redo-alt replay-voice"
+  title="Replay last response"
+  @click="replayVoice"
+></i>
+
+  <!-- Close -->
+  <i
+    class="fas fa-times close"
+    @click="toggleChat"
+  ></i>
+
+</div>
 
     </div>
 
     <!-- Messages -->
 
-    <div
-      class="chat-body"
-      ref="chatBody"
-    >
+    <div class="chat-body" ref="chatBody">
 
-      <div
-        v-for="(message,index) in messages"
-        :key="index"
-        :class="['chips', 'cert'].includes(message.type) ? 'bot' : message.type"
-      >
+      <div v-for="(message, index) in messages" :key="index"
+        :class="['chips', 'cert'].includes(message.type) ? 'bot' : message.type">
         <template v-if="message.type === 'chips'">
           <div>{{ message.label }}</div>
           <div class="chips">
-            <span
-              v-for="chip in message.chips"
-              :key="chip.key"
-              class="chip"
-              @click="selectChip(chip)"
-            >{{ chip.key }}</span>
+            <div class="chips">
+
+              <span v-for="chip in (message.expanded
+                ? message.chips
+                : message.chips.slice(0, 2))" :key="chip.key" class="chip" @click="selectChip(chip)">
+                {{ chip.key }}
+              </span>
+
+              <span v-if="!message.expanded && message.chips.length > 2" class="chip more-chip"
+                @click="message.expanded = true">
+                +{{ message.chips.length - IntialValue }}
+              </span>
+              <span v-else-if="message.expanded && message.chips.length > 2" class="chip more-chip"
+                @click="message.expanded = false">
+                -{{ message.chips.length - IntialValue }}
+              </span>
+            </div>
           </div>
         </template>
         <template v-else-if="message.type === 'cert'">
           <div style="margin-bottom:6px;font-weight:600;">{{ message.name }}</div>
           <div>To verify, <a :href="message.credlyUrl" target="_blank" class="cert-link">click here</a></div>
         </template>
+        <template v-else-if="message.type === 'samplePrompt'">
+
+  <button
+    class="sample-chip"
+    @click="showSampleQuestions"
+  >
+    💡 Try Asking
+  </button>
+
+</template>
         <template v-else>
           {{ message.text }}
         </template>
@@ -79,22 +109,14 @@
 
     <div class="chat-footer">
 
-      <input
-        v-model="question"
-        @keyup.enter="askQuestion"
-        placeholder="Ask about Sakkthi..."
-      />
+      <input v-model="question" @keyup.enter="askQuestion" placeholder="Ask about Sakkthi..." />
 
       <button @click="askQuestion">
         <i class="fas fa-paper-plane"></i>
       </button>
 
-      <button
-        class="stop-btn"
-        :disabled="!isStreaming"
-        :title="isStreaming ? 'Stop' : 'Not streaming'"
-        @click="stopStreaming"
-      >
+      <button class="stop-btn" :disabled="!isStreaming" :title="isStreaming ? 'Stop' : 'Not streaming'"
+        @click="stopStreaming">
         <i class="fas fa-stop-circle"></i>
       </button>
 
@@ -110,29 +132,86 @@ import { ref, nextTick } from "vue"
 import resume from "../assets/resumeData"
 import { matchJD } from "../utils/jdMatcher"
 
+const IntialValue = 2
+
 const isOpen = ref(false)
 const speakEnabled = ref(false)
 const isStreaming = ref(false)
 const hasWelcomed = ref(false)
+const isSpeaking = ref(false)
+const lastSpokenText = ref("")
+
 let stopFlag = false
+
+const stopVoice = () => {
+  window.speechSynthesis.cancel()
+  isSpeaking.value = false
+}
 
 const stopStreaming = () => {
   stopFlag = true
   window.speechSynthesis.cancel()
 }
 
+const showSampleQuestions = () => {
+
+  messages.value.push({
+    type: "chips",
+    label: "Example Questions",
+    expanded: false,
+    chips: [
+      { key: "Tell me about Sakkthi" },
+      { key: "Show AWS experience" },
+      { key: "Companies worked at" },
+      { key: "Projects" },
+      { key: "Skills" },
+      { key: "Education" },
+      { key: "Certifications" },
+      { key: "JD Match" }
+    ]
+  })
+
+  scrollBottom()
+
+}
+
 const speak = (text) => {
+
   if (!speakEnabled.value) return
+
+  lastSpokenText.value = text
+
   window.speechSynthesis.cancel()
-  const clean = text.replace(/[^\x00-\x7F•]/g, "").trim()
-  if (!clean) return
-  const utter = new SpeechSynthesisUtterance(clean)
+
+  const utter = new SpeechSynthesisUtterance(text)
+
   utter.rate = 1
   utter.pitch = 1
   utter.lang = "en-US"
-  window.speechSynthesis.resume()
+
+  utter.onstart = () => {
+    isSpeaking.value = true
+  }
+
+  utter.onend = () => {
+    isSpeaking.value = false
+  }
+
+  utter.onerror = () => {
+    isSpeaking.value = false
+  }
+
   window.speechSynthesis.speak(utter)
 }
+
+const replayVoice = () => {
+
+  if (!lastSpokenText.value)
+    return
+
+  speak(lastSpokenText.value)
+}
+
 
 const question = ref("")
 
@@ -140,20 +219,33 @@ const chatBody = ref(null)
 
 const messages = ref([
   {
-  type: "bot",
-  text: `Hello, and welcome to my portfolio.
+    type: "bot",
+    text: `Hello, and welcome to my portfolio.
 
-I'm Sakkthinagaraj's AI assistant. I'm here to help you learn about his professional experience, technical skills, projects, AWS expertise, certifications, and education.
-
-You can also paste a job description, and I'll evaluate how well his profile matches the role.
+I'm Sakkthinagaraj's AI assistant. I'm here to help you learn about him.
 
 Feel free to ask me anything from Sakkthi's resume. I hope you enjoy exploring the portfolio.`
-}
+  },
+  {
+    type: "samplePrompt"
+  }
 ])
+
+const toggleVoice = () => {
+
+  speakEnabled.value = !speakEnabled.value
+
+  // If turning voice OFF, stop any speech immediately
+  if (!speakEnabled.value) {
+    window.speechSynthesis.cancel()
+    isSpeaking.value = false
+  }
+
+}
 
 const toggleChat = () => {
   isOpen.value = !isOpen.value
-  
+
   if (
     isOpen.value &&
     !hasWelcomed.value &&
@@ -259,6 +351,11 @@ const showChips = (label, obj, type = "default") => {
 }
 
 const selectChip = async (chip) => {
+  if (!chip.value && !chip.type) {
+    question.value = chip.key
+    askQuestion()
+    return
+  }
   messages.value.push({ type: "user", text: chip.key })
   await scrollBottom()
   if (chip.type === "company") {
@@ -356,13 +453,13 @@ const askQuestion = async () => {
 
 ✅ Matched Skills:
 ${result.matched.length
-  ? result.matched.join(", ")
-  : "None"}
+        ? result.matched.join(", ")
+        : "None"}
 
 ❌ Missing Skills:
 ${result.missing.length
-  ? result.missing.join(", ")
-  : "None"}
+        ? result.missing.join(", ")
+        : "None"}
 `
 
     if (result.score >= 80) {
@@ -404,98 +501,98 @@ Consider highlighting transferable experience.
 
   // About
 
-if (
-  q.includes("about") ||
-  q.includes("introduce") ) {
-  answer = resume.about
-}
-else if (
-  q.includes("years")
-) {
-  question.value = ""
-  await streamMessage(resume.totalYearsOfExperience)
-  showChips("Explore experience by domain:", resume.domainExperience)
-  return
-}
-else if (
-  q.includes("certification") ||
-  q.includes("certified") ||
-  q.includes("credly")
-) {
-  question.value = ""
-  resume.certifications.forEach(cert => {
-    messages.value.push({ type: "cert", name: cert.name, credlyUrl: cert.credlyUrl })
-  })
-  await scrollBottom()
-  return
-}
-else if(
-  q.includes("aws")
-){
-  question.value = ""
-   await streamMessage(resume.awsExperienceSummary)
-  showChips("Select an AWS service:", resume.awsExperience || {})
-  return
-}
-else if(
-  Object.keys(resume.awsExperience).some(k => q.includes(k.toLowerCase()))
-){
-  const matchedKey = Object.keys(resume.awsExperience).find(k => q.includes(k.toLowerCase()))
-  answer = resume.awsExperience[matchedKey]
-}
-else if(
-  q.includes("ai")
-){
-  question.value = ""
-  await streamMessage(resume.AIToolsExperienceSummary)
-  showChips("Select an AI tool:", resume.AIToolsExperience || {})
-  return
-}
-else if(
-  q.includes("django")
-){
-  question.value = ""
-  await streamMessage(resume.djangoExperienceSummary)
-  showChips("Select a Django topic:", resume.djangoExperience || {})
-  return
-}
-else if(
-  q.includes("frontend")
-){
-  question.value = ""
-  await streamMessage(resume.FrontendExperienceSummary)
-  showChips("Select a Frontend topic:", resume.FrontendExperience || {})
-  return
-}
-else if(
-  q.includes("fastapi")
-){
-  question.value = ""
-  await streamMessage(resume.FastAPIExperience.fastapi) 
-  return
-}
-else if(
-  q.includes("iac")
-){
-  question.value = ""
-  await streamMessage(resume.IACExperience.terraform)
-  return
-}
-else if(
-  q.includes("ai")
-){
-  question.value = ""
-  showChips("Select an AI tool:", resume.AIToolsExperience || {})
-  return
-}
-// Overview
+  if (
+    q.includes("about") ||
+    q.includes("introduce")) {
+    answer = resume.about
+  }
+  else if (
+    q.includes("years")
+  ) {
+    question.value = ""
+    await streamMessage(resume.totalYearsOfExperience)
+    showChips("Explore experience by domain:", resume.domainExperience)
+    return
+  }
+  else if (
+    q.includes("certification") ||
+    q.includes("certified") ||
+    q.includes("credly")
+  ) {
+    question.value = ""
+    resume.certifications.forEach(cert => {
+      messages.value.push({ type: "cert", name: cert.name, credlyUrl: cert.credlyUrl })
+    })
+    await scrollBottom()
+    return
+  }
+  else if (
+    q.includes("aws")
+  ) {
+    question.value = ""
+    await streamMessage(resume.awsExperienceSummary)
+    showChips("Select an AWS service:", resume.awsExperience || {})
+    return
+  }
+  else if (
+    Object.keys(resume.awsExperience).some(k => q.includes(k.toLowerCase()))
+  ) {
+    const matchedKey = Object.keys(resume.awsExperience).find(k => q.includes(k.toLowerCase()))
+    answer = resume.awsExperience[matchedKey]
+  }
+  else if (
+    q.includes("ai")
+  ) {
+    question.value = ""
+    await streamMessage(resume.AIToolsExperienceSummary)
+    showChips("Select an AI tool:", resume.AIToolsExperience || {})
+    return
+  }
+  else if (
+    q.includes("django")
+  ) {
+    question.value = ""
+    await streamMessage(resume.djangoExperienceSummary)
+    showChips("Select a Django topic:", resume.djangoExperience || {})
+    return
+  }
+  else if (
+    q.includes("frontend")
+  ) {
+    question.value = ""
+    await streamMessage(resume.FrontendExperienceSummary)
+    showChips("Select a Frontend topic:", resume.FrontendExperience || {})
+    return
+  }
+  else if (
+    q.includes("fastapi")
+  ) {
+    question.value = ""
+    await streamMessage(resume.FastAPIExperience.fastapi)
+    return
+  }
+  else if (
+    q.includes("iac")
+  ) {
+    question.value = ""
+    await streamMessage(resume.IACExperience.terraform)
+    return
+  }
+  else if (
+    q.includes("ai")
+  ) {
+    question.value = ""
+    showChips("Select an AI tool:", resume.AIToolsExperience || {})
+    return
+  }
+  // Overview
   else if (
     q.includes("overview") ||
     q.includes("summary")
-) {
-  
-  answer = resume.overview
-}
+  ) {
+
+    answer = resume.overview
+  }
 
   // Skills
 
@@ -596,9 +693,9 @@ else if(
     const c = resume.contact
     answer = `📧 Email: ${c.email}\n📞 Phone: ${c.phone}\n🔗 GitHub: ${c.github}`
   }
-  else if(
+  else if (
     q.includes("years")
-  ){
+  ) {
     answer = resume.totalYearOfExperience
   }
 
@@ -616,7 +713,63 @@ else if(
 </script>
 
 <style scoped>
+.replay-voice {
+  cursor: pointer;
+  color: white;
+  opacity: 0.8;
+  transition: .2s;
+}
 
+.replay-voice:hover {
+  opacity: 1;
+  color: #93c5fd;
+}
+
+.stop-voice {
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 18px;
+  transition: 0.2s;
+}
+
+.stop-voice:hover {
+  color: #dc2626;
+}
+.sample-chip{
+
+  border:none;
+
+  background:#2563eb;
+
+  color:white;
+
+  padding:10px 18px;
+
+  border-radius:20px;
+
+  cursor:pointer;
+
+  font-size:14px;
+
+  font-weight:600;
+
+  transition:.2s;
+
+}
+
+.sample-chip:hover{
+
+  background:#1d4ed8;
+
+}
+.more-chip{
+  background:#475569;
+  font-weight:600;
+}
+
+.more-chip:hover{
+  background:#334155;
+}
 .header-avatar-logo {
   width: 65px;
   height: 65px;
@@ -624,6 +777,7 @@ else if(
   object-fit: cover;
   vertical-align: middle;
 }
+
 .header-avatar-img {
   width: 28px;
   height: 28px;
@@ -633,224 +787,224 @@ else if(
   vertical-align: middle;
 }
 
-.cert-link{
-  color:#8594a6;
-  text-decoration:underline;
+.cert-link {
+  color: #8594a6;
+  text-decoration: underline;
 }
 
-.chips{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-top:10px;
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
 }
 
-.chip{
-  background:#2563eb;
-  color:white;
-  padding:6px 14px;
-  border-radius:20px;
-  font-size:0.82rem;
-  cursor:pointer;
-  transition:.2s;
+.chip {
+  background: #2563eb;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: .2s;
 }
 
-.chip:hover{
-  background:#1d4ed8;
+.chip:hover {
+  background: #1d4ed8;
 }
 
-.chat-bubble{
-  position:fixed;
-  bottom:25px;
-  right:25px;
-  width:65px;
-  height:65px;
-  border-radius:50%;
-  background:#2563eb;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  cursor:pointer;
-  color:white;
-  font-size:28px;
-  box-shadow:0 8px 25px rgba(0,0,0,.35);
-  transition:.3s;
-  z-index:9999;
+.chat-bubble {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  background: #2563eb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: white;
+  font-size: 28px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, .35);
+  transition: .3s;
+  z-index: 9999;
   animation: pulse 2s infinite;
 }
 
-.chat-bubble:hover{
-  transform:scale(1.08);
+.chat-bubble:hover {
+  transform: scale(1.08);
   animation-play-state: paused;
 }
+
 @keyframes pulse {
   0% {
     transform: scale(1);
-    box-shadow: 0 8px 25px rgba(0,0,0,.35);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, .35);
   }
 
   50% {
     transform: scale(1.08);
-    box-shadow: 0 8px 35px rgba(37,99,235,.7);
+    box-shadow: 0 8px 35px rgba(37, 99, 235, .7);
   }
 
   100% {
     transform: scale(1);
-    box-shadow: 0 8px 25px rgba(0,0,0,.35);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, .35);
   }
 }
 
-.chat-window{
-  position:fixed;
-  right:25px;
-  bottom:25px;
-  width:380px;
-  height:550px;
-  background:#0f172a;
-  border-radius:20px;
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-  box-shadow:0 10px 40px rgba(0,0,0,.4);
-  z-index:9999;
+.chat-window {
+  position: fixed;
+  right: 25px;
+  bottom: 25px;
+  width: 380px;
+  height: 550px;
+  background: #0f172a;
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, .4);
+  z-index: 9999;
 }
 
-.chat-header{
-  background:#2563eb;
-  color:white;
-  padding:18px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  font-weight:bold;
+.chat-header {
+  background: #2563eb;
+  color: white;
+  padding: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
 }
 
-.chat-header i{
-  margin-right:8px;
+.chat-header i {
+  margin-right: 8px;
 }
 
-.header-actions{
-  display:flex;
-  align-items:center;
-  gap:14px;
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
-.voice-toggle{
-  cursor:pointer;
-  font-size:18px;
-  transition:.2s;
-  opacity:0.7;
+.voice-toggle {
+  cursor: pointer;
+  font-size: 18px;
+  transition: .2s;
+  opacity: 0.7;
 }
 
-.stop-btn{
-  width:50px;
-  border:none;
-  border-radius:10px;
-  background:transparent;
-  color:#ef4444;
-  cursor:pointer;
-  transition:.3s;
-  font-size:20px;
+.stop-btn {
+  width: 50px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #ef4444;
+  cursor: pointer;
+  transition: .3s;
+  font-size: 20px;
 }
 
-.stop-btn:hover:not(:disabled){
-  color:#dc2626;
+.stop-btn:hover:not(:disabled) {
+  color: #dc2626;
 }
 
-.stop-btn:disabled{
-  opacity:0.3;
-  cursor:not-allowed;
+.stop-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
 
-.close{
-  cursor:pointer;
+.close {
+  cursor: pointer;
 }
 
-.chat-body{
-  flex:1;
-  padding:15px;
-  overflow-y:auto;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
+.chat-body {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.bot{
-  background:#1e293b;
-  color:white;
-  padding:12px;
-  border-radius:12px;
-  max-width:85%;
-  align-self:flex-start;
-  white-space:pre-wrap;
-  line-height:1.5;
+.bot {
+  background: #1e293b;
+  color: white;
+  padding: 12px;
+  border-radius: 12px;
+  max-width: 85%;
+  align-self: flex-start;
+  white-space: pre-wrap;
+  line-height: 1.5;
 }
 
-.user{
-  background:#2563eb;
-  color:white;
-  padding:12px;
-  border-radius:12px;
-  max-width:85%;
-  align-self:flex-end;
-  white-space:pre-wrap;
-  line-height:1.5;
+.user {
+  background: #2563eb;
+  color: white;
+  padding: 12px;
+  border-radius: 12px;
+  max-width: 85%;
+  align-self: flex-end;
+  white-space: pre-wrap;
+  line-height: 1.5;
 }
 
-.chat-footer{
-  background:#111827;
-  padding:10px;
-  display:flex;
-  gap:10px;
+.chat-footer {
+  background: #111827;
+  padding: 10px;
+  display: flex;
+  gap: 10px;
 }
 
-.chat-footer input{
-  flex:1;
-  padding:12px;
-  border:none;
-  outline:none;
-  border-radius:10px;
-  background:#1e293b;
-  color:white;
+.chat-footer input {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  background: #1e293b;
+  color: white;
 }
 
-.chat-footer input::placeholder{
-  color:#94a3b8;
+.chat-footer input::placeholder {
+  color: #94a3b8;
 }
 
-.chat-footer button{
-  width:50px;
-  border:none;
-  background:transparent;
-  color:white;
-  cursor:pointer;
-  transition:.3s;
-  font-size:20px;
+.chat-footer button {
+  width: 50px;
+  border: none;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  transition: .3s;
+  font-size: 20px;
 }
 
-.chat-footer button:hover{
-  color:#93c5fd;
+.chat-footer button:hover {
+  color: #93c5fd;
 }
 
-.chat-body::-webkit-scrollbar{
-  width:6px;
+.chat-body::-webkit-scrollbar {
+  width: 6px;
 }
 
-.chat-body::-webkit-scrollbar-thumb{
-  background:#334155;
-  border-radius:10px;
+.chat-body::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 10px;
 }
 
-@media(max-width:500px){
+@media(max-width:500px) {
 
-  .chat-window{
-    width:95%;
-    right:2.5%;
-    bottom:15px;
-    height:80vh;
+  .chat-window {
+    width: 95%;
+    right: 2.5%;
+    bottom: 15px;
+    height: 80vh;
   }
 
 }
-
 </style>
